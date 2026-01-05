@@ -1,14 +1,32 @@
 import React from 'react';
-
+import {  createUserWithEmailAndPassword } from "firebase/auth";
+import {auth} from '../component/firebase.init'
+import { useState } from 'react';
 const Register = () => {
+  const [errormessage,seterrormessage]=useState('')
     const handleRegister=e=>{
         e.preventDefault()
         const email=e.target.email.value;
         const password=e.target.password.value;
        // const  button=e.target.btn.value;
        console.log(email,password);
+         seterrormessage('')
+        //create user
+    createUserWithEmailAndPassword(auth, email, password)
+    .then(result => {
+    // Signed up 
+    console.log(result);
+    
+  })
+  .catch(error => {
+    console.log(error);
+    seterrormessage(error.message)
+  })
     }
+   
     return (
+        <div className='max-w-sm mx-auto border mt-10'>
+            <h1 className='text-center mt-2'>Sign Up</h1>
         <form onSubmit={handleRegister} className='p-4'>
           <div className='py-2'>
             <label className="input validator">
@@ -48,7 +66,7 @@ const Register = () => {
     type="password" name='password'
     required
     placeholder="Password"
-    minlength="8"
+    minLength="8"
     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
     title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
   />
@@ -60,6 +78,10 @@ const Register = () => {
           </div>
        <button className='btn btn-soft btn-primary' >Submit</button>
         </form>
+        {
+          errormessage && <p className='bg-amber-700'>{errormessage}</p>
+        }
+        </div>
     );
 };
 
