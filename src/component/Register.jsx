@@ -2,21 +2,38 @@ import React from 'react';
 import {  createUserWithEmailAndPassword } from "firebase/auth";
 import {auth} from '../component/firebase.init'
 import { useState } from 'react';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 const Register = () => {
+  const [success,setsucess]=useState(false)
   const [errormessage,seterrormessage]=useState('')
+  const [showpassword,setpassword]=useState(false)
+
+
     const handleRegister=e=>{
         e.preventDefault()
         const email=e.target.email.value;
         const password=e.target.password.value;
+        const terms=e.target.terms.checked;
        // const  button=e.target.btn.value;
-       console.log(email,password);
+       console.log(email,password,terms);
          seterrormessage('')
+         setsucess(false)
+         //validation of password
+         const passwordexpre=/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+         if(passwordexpre.test(password)===false){
+              seterrormessage('password must have one lowercase,one uppercase,one digit and 6 characters or longer')
+              return;
+         }
+         if(!terms){
+          seterrormessage("please accept our terms and condition")
+          return
+         }
         //create user
     createUserWithEmailAndPassword(auth, email, password)
     .then(result => {
     // Signed up 
     console.log(result);
-    
+    setsucess(true);
   })
   .catch(error => {
     console.log(error);
@@ -46,40 +63,39 @@ const Register = () => {
 </label>
 <div className="validator-hint hidden">Enter valid email address</div>
           </div>
-          <div className='py-2'>
-            <label className="input validator">
-  <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <g
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="2.5"
-      fill="none"
-      stroke="currentColor"
-    >
-      <path
-        d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
-      ></path>
-      <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-    </g>
-  </svg>
-  <input
-    type="password" name='password'
-    required
+        
+            <label className="lebel mt-4">Password</label>
+    
+   <div className='relative'>
+   <input
+    type={showpassword?'text':'password'} name='password' className='input'
     placeholder="Password"
-    minLength="8"
-    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-    title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-  />
-</label>
-<p className="validator-hint hidden">
-  Must be more than 8 characters, including
-  <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter
-</p>
-          </div>
+   
+    />
+     <button onClick={()=>{setpassword(!showpassword)}}
+     className='btn btn-xs absolute right-9 top-2'>
+      {
+        showpassword ?<FaEyeSlash />:<FaEye/>
+      }
+     
+     
+     </button>
+ </div>
+       <p>forget password?</p>
+
+
+ <label class="label mt-2">
+    <input type="checkbox" name="terms" class="checkbox" />
+  Accepted terms & condition
+  </label>
+  <br/>
        <button className='btn btn-soft btn-primary' >Submit</button>
         </form>
         {
-          errormessage && <p className='bg-amber-700'>{errormessage}</p>
+          errormessage && <p className='text-red-700 p-2 text-center'>{errormessage}</p>
+        }
+        {
+          success && <p className='text-emerald-300 text-center p-2'>User has Create Successfully{success}</p>
         }
         </div>
     );
