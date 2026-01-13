@@ -1,13 +1,15 @@
 import React from 'react';
-import {  createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from '../component/firebase.init'
+import {  createUserWithEmailAndPassword ,sendEmailVerification } from "firebase/auth";
+import {auth} from '../component/firebase.init';
+import Login from '../Layout/Login';
 import { useState } from 'react';
+import { Link } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 const Register = () => {
   const [success,setsucess]=useState(false)
   const [errormessage,seterrormessage]=useState('')
   const [showpassword,setpassword]=useState(false)
-
+  
 
     const handleRegister=e=>{
         e.preventDefault()
@@ -33,15 +35,23 @@ const Register = () => {
     .then(result => {
     // Signed up 
     console.log(result);
-    setsucess(true);
+    sendEmailVerification(auth.currentUser)
+    .then(() => {
+      setsucess(true);
+      alert('We sent you a verification email')
+
+    });
+    
   })
   .catch(error => {
     console.log(error);
     seterrormessage(error.message)
   })
-    }
    
-    return (
+ 
+}
+  
+    return  (
         <div className='max-w-sm mx-auto border mt-10'>
             <h1 className='text-center mt-2'>Sign Up</h1>
         <form onSubmit={handleRegister} className='p-4'>
@@ -59,7 +69,7 @@ const Register = () => {
       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
     </g>
   </svg>
-  <input name='email' type="email" placeholder="mail@site.com" required />
+  <input name='email'  type="email" placeholder="mail@site.com" required />
 </label>
 <div className="validator-hint hidden">Enter valid email address</div>
           </div>
@@ -81,7 +91,7 @@ const Register = () => {
      
      </button>
  </div>
-       <p>forget password?</p>
+       <div className='p-2 '>forget password?</div>
 
 
  <label class="label mt-2">
@@ -91,6 +101,7 @@ const Register = () => {
   <br/>
        <button className='btn btn-soft btn-primary' >Submit</button>
         </form>
+        <p className='p-4'>Already have an account? Please <Link className="text-blue-500 underline" to='/Login'>Login</Link></p>
         {
           errormessage && <p className='text-red-700 p-2 text-center'>{errormessage}</p>
         }
